@@ -1,63 +1,147 @@
-import Image from "next/image";
+'use client';
+
+import * as React from 'react';
+import {
+  makeStyles,
+  shorthands,
+  tokens,
+  useId,
+  useToastController,
+  Toaster,
+  Tab,
+  TabList,
+} from '@fluentui/react-components';
+import {
+  GlobeRegular,
+  VideoRegular,
+  ColorRegular,
+} from '@fluentui/react-icons';
+import FaviconExtractor from '@/components/FaviconExtractor';
+import ScreenRecorder from '@/components/ScreenRecorder';
+import ColorPicker from '@/components/ColorPicker';
+
+const useStyles = makeStyles({
+  layoutContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+    width: '100%',
+    backgroundColor: tokens.colorNeutralBackground4,
+  },
+  topBar: {
+    backgroundColor: tokens.colorNeutralBackground1,
+    ...shorthands.borderBottom('1px', 'solid', tokens.colorNeutralStroke2),
+    padding: '12px 24px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    boxSizing: 'border-box',
+  },
+  topBarLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+  },
+  topBarTitle: {
+    fontWeight: 'bold',
+    fontSize: '18px',
+    color: tokens.colorNeutralForeground1,
+  },
+  logo: {
+    width: '24px',
+    height: '24px',
+    borderRadius: '4px',
+    objectFit: 'contain',
+  },
+  tabList: {},
+  contentArea: {
+    flexGrow: 1,
+    padding: '40px 24px',
+    display: 'flex',
+    justifyContent: 'center',
+    overflowY: 'auto',
+  },
+});
+
+interface Recording {
+  name: string;
+  url: string;
+  duration: string;
+  size: string;
+}
 
 export default function Home() {
+  const styles = useStyles();
+  const [activeTab, setActiveTab] = React.useState<'favicon' | 'recorder' | 'color'>('favicon');
+
+  // Shared Toaster Config
+  const toasterId = useId('global-toaster');
+  const { dispatchToast } = useToastController(toasterId);
+
+  // Shared Screen Recorder States to preserve recordings on tab switch!
+  const [recordings, setRecordings] = React.useState<Recording[]>([]);
+  const [recorderState, setRecorderState] = React.useState<{
+    stream: MediaStream | null;
+    mediaRecorder: MediaRecorder | null;
+    chunks: Blob[];
+    seconds: number;
+    paused: boolean;
+    isSupported: boolean;
+    status: string;
+  }>({
+    stream: null,
+    mediaRecorder: null,
+    chunks: [],
+    seconds: 0,
+    paused: false,
+    isSupported: true,
+    status: 'Sẵn sàng · Nhấn Bắt đầu để quay màn hình',
+  });
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className={styles.layoutContainer}>
+      <Toaster toasterId={toasterId} position="top-end" />
+
+      {/* Top Bar Header Navigation */}
+      <header className={styles.topBar}>
+        <div className={styles.topBarLeft}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon-192.png" alt="Logo" className={styles.logo} />
+          <span className={styles.topBarTitle}>T001WEB</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <TabList
+          selectedValue={activeTab}
+          onTabSelect={(e, data) => setActiveTab(data.value as any)}
+          className={styles.tabList}
+        >
+          <Tab value="favicon" icon={<GlobeRegular />}>
+            Favicon Extractor
+          </Tab>
+          <Tab value="recorder" icon={<VideoRegular />}>
+            Screen Recorder
+          </Tab>
+          <Tab value="color" icon={<ColorRegular />}>
+            Color Picker
+          </Tab>
+        </TabList>
+      </header>
+
+      {/* Main Content Area */}
+      <main className={styles.contentArea}>
+        <div style={{ display: activeTab === 'favicon' ? 'flex' : 'none', width: '100%', justifyContent: 'center' }}>
+          <FaviconExtractor dispatchToast={dispatchToast} />
+        </div>
+        <div style={{ display: activeTab === 'recorder' ? 'flex' : 'none', width: '100%', justifyContent: 'center' }}>
+          <ScreenRecorder
+            recordings={recordings}
+            setRecordings={setRecordings}
+            recorderState={recorderState}
+            setRecorderState={setRecorderState}
+            dispatchToast={dispatchToast}
+          />
+        </div>
+        <div style={{ display: activeTab === 'color' ? 'flex' : 'none', width: '100%', justifyContent: 'center' }}>
+          <ColorPicker dispatchToast={dispatchToast} />
         </div>
       </main>
     </div>
