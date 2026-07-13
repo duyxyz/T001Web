@@ -408,7 +408,7 @@ export default function DnsChanger({
                 style={{ width: '100%' }}
               >
                 {adapters.map(a => (
-                  <Option key={a.interfaceIndex} value={a.interfaceIndex.toString()}>
+                  <Option key={a.interfaceIndex} value={a.interfaceIndex.toString()} text={`${a.interfaceAlias} (Index: ${a.interfaceIndex})`}>
                     {a.interfaceAlias} (Index: {a.interfaceIndex})
                   </Option>
                 ))}
