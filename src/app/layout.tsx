@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   title: "T001WEB",
   description: "Bộ công cụ tiện ích Web đa năng: Favicon Extractor và Screen Recorder.",
   icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" }
+    ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180" }
     ]

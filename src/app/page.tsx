@@ -31,7 +31,7 @@ const useStyles = makeStyles({
   topBar: {
     backgroundColor: tokens.colorNeutralBackground1,
     ...shorthands.borderBottom('1px', 'solid', tokens.colorNeutralStroke2),
-    padding: '12px 24px',
+    padding: '6px 24px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -44,13 +44,13 @@ const useStyles = makeStyles({
   },
   topBarTitle: {
     fontWeight: 'bold',
-    fontSize: '18px',
+    fontSize: '20px',
     color: tokens.colorNeutralForeground1,
   },
   logo: {
-    width: '24px',
-    height: '24px',
-    borderRadius: '4px',
+    width: '36px',
+    height: '36px',
+    borderRadius: '6px',
     objectFit: 'contain',
   },
   tabList: {},
