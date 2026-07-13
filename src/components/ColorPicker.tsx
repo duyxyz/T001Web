@@ -283,8 +283,8 @@ export default function ColorPicker({
   dispatchToast: (toast: React.ReactNode, options?: any) => void;
 }) {
   const styles = useStyles();
-  const [color, setColor] = React.useState('#0f6cbd');
-  const [history, setHistory] = React.useState<string[]>(['#0f6cbd', '#107c41', '#d83b01', '#ffb900', '#8660a9']);
+  const [color, setColor] = React.useState('#6264a7');
+  const [history, setHistory] = React.useState<string[]>(['#6264a7', '#107c41', '#d83b01', '#ffb900', '#8660a9']);
   const [isEyeDropperSupported, setIsEyeDropperSupported] = React.useState(false);
   const [imageUrl, setImageUrl] = React.useState<string | null>(null);
   const imageRef = React.useRef<HTMLImageElement>(null);
