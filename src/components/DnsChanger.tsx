@@ -255,6 +255,16 @@ export default function DnsChanger({
 
   const currentAdapter = adapters.find(a => a.interfaceIndex === selectedAdapterIndex);
 
+  React.useEffect(() => {
+    if (isRemoteServer) {
+      setPingHost('1.1.1.1');
+    } else if (currentAdapter && currentAdapter.serverAddresses.length > 0) {
+      setPingHost(currentAdapter.serverAddresses[0]);
+    } else {
+      setPingHost('');
+    }
+  }, [currentAdapter, isRemoteServer]);
+
   const handleSelectPreset = (index: number) => {
     setSelectedPresetIndex(index);
     setPrimaryDns(PRESETS[index].primary);
