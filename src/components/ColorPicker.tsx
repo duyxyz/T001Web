@@ -301,6 +301,30 @@ export default function ColorPicker({
   }, []);
 
   React.useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const file = items[i].getAsFile();
+          if (file) {
+            const url = URL.createObjectURL(file);
+            setImageUrl(url);
+            setTransform({ zoom: 1, x: 0, y: 0 });
+            e.preventDefault();
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('paste', handlePaste);
+    return () => {
+      window.removeEventListener('paste', handlePaste);
+    };
+  }, []);
+
+  React.useEffect(() => {
     const img = imageRef.current;
     if (!img) return;
 
@@ -608,7 +632,7 @@ export default function ColorPicker({
                     />
                     <div className={styles.dropzone}>
                       <ImageRegular fontSize={36} />
-                      <span style={{ fontWeight: '500' }}>Tải ảnh lên hoặc Click để chọn ảnh</span>
+                      <span style={{ fontWeight: '500' }}>Kéo thả ảnh, dán từ bộ nhớ tạm (Ctrl+V) hoặc click để chọn ảnh</span>
                       <Caption1>Hỗ trợ định dạng PNG, JPG, WEBP, SVG</Caption1>
                     </div>
                   </>
