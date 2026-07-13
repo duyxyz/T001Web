@@ -39,7 +39,7 @@ interface Recording {
 
 const useStyles = makeStyles({
   container: {
-    maxWidth: '960px',
+    maxWidth: '1200px',
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -68,11 +68,13 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
   },
   settingsPanel: {
-    width: '260px',
+    width: '320px',
+    minWidth: 0,
     display: 'flex',
     flexDirection: 'column',
     gap: '16px',
     flexShrink: 0,
+    overflow: 'hidden',
   },
   recordingWorkspace: {
     flexGrow: 1,
@@ -176,6 +178,15 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '20px',
+  },
+  sectionCard: {
+    backgroundColor: tokens.colorNeutralBackground2,
+    borderRadius: tokens.borderRadiusXLarge,
+    ...shorthands.padding('20px'),
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
   },
 });
 
@@ -611,87 +622,91 @@ export default function ScreenRecorder({
       <div className={styles.recorderLayout}>
         {/* Left Column - Settings */}
         <div className={styles.settingsPanel}>
-          <Subtitle2>Cấu hình thiết bị & chất lượng:</Subtitle2>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <Switch
-              label="Thu giọng nói (Microphone)"
-              checked={recordMicrophone}
-              onChange={(e, data) => setRecordMicrophone(data.checked)}
-              disabled={isRecording}
-            />
-            <Switch
-              label="Thu âm thanh hệ thống"
-              checked={recordSystemAudio}
-              onChange={(e, data) => setRecordSystemAudio(data.checked)}
-              disabled={isRecording}
-            />
-            <Switch
-              label="Chèn Webcam overlay"
-              checked={webcamOverlay}
-              onChange={(e, data) => setWebcamOverlay(data.checked)}
-              disabled={isRecording}
-            />
-          </div>
+          <div className={styles.sectionCard}>
+            <Subtitle2>Cấu hình thiết bị &amp; chất lượng:</Subtitle2>
 
-          <Divider />
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <Caption1 style={{ fontWeight: '600' }}>Độ phân giải giới hạn</Caption1>
-              <Dropdown
-                value={resolution === 'source' ? 'Gốc (Màn hình)' : resolution}
-                onOptionSelect={(e, data) => setResolution(data.optionValue as any)}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <Switch
+                label="Thu giọng nói (Microphone)"
+                checked={recordMicrophone}
+                onChange={(e, data) => setRecordMicrophone(data.checked)}
                 disabled={isRecording}
-                size="medium"
-              >
-                <Option value="source">Gốc (Màn hình)</Option>
-                <Option value="1080p">1080p (Full HD)</Option>
-                <Option value="720p">720p (HD)</Option>
-              </Dropdown>
+              />
+              <Switch
+                label="Thu âm thanh hệ thống"
+                checked={recordSystemAudio}
+                onChange={(e, data) => setRecordSystemAudio(data.checked)}
+                disabled={isRecording}
+              />
+              <Switch
+                label="Chèn Webcam overlay"
+                checked={webcamOverlay}
+                onChange={(e, data) => setWebcamOverlay(data.checked)}
+                disabled={isRecording}
+              />
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <Caption1 style={{ fontWeight: '600' }}>Tốc độ khung hình (FPS)</Caption1>
-              <Dropdown
-                value={`${fps} FPS`}
-                onOptionSelect={(e, data) => setFps(Number(data.optionValue))}
-                disabled={isRecording}
-                size="medium"
-              >
-                <Option value="60">60 FPS</Option>
-                <Option value="30">30 FPS</Option>
-              </Dropdown>
-            </div>
+            <Divider />
 
-            {webcamOverlay && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <Caption1 style={{ fontWeight: '600' }}>Vị trí Webcam</Caption1>
+                <Caption1 style={{ fontWeight: '600' }}>Độ phân giải giới hạn</Caption1>
                 <Dropdown
-                  value={
-                    webcamPosition === 'bottom-right'
-                      ? 'Dưới bên phải'
-                      : webcamPosition === 'bottom-left'
-                      ? 'Dưới bên trái'
-                      : webcamPosition === 'top-right'
-                      ? 'Trên bên phải'
-                      : 'Trên bên trái'
-                  }
-                  onOptionSelect={(e, data) => setWebcamPosition(data.optionValue as any)}
+                  value={resolution === 'source' ? 'Gốc (Màn hình)' : resolution}
+                  onOptionSelect={(e, data) => setResolution(data.optionValue as any)}
                   disabled={isRecording}
                   size="medium"
+                  style={{ width: '100%' }}
                 >
-                  <Option value="bottom-right">Dưới bên phải</Option>
-                  <Option value="bottom-left">Dưới bên trái</Option>
-                  <Option value="top-right">Trên bên phải</Option>
-                  <Option value="top-left">Trên bên trái</Option>
+                  <Option value="source">Gốc (Màn hình)</Option>
+                  <Option value="1080p">1080p (Full HD)</Option>
+                  <Option value="720p">720p (HD)</Option>
                 </Dropdown>
               </div>
-            )}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <Caption1 style={{ fontWeight: '600' }}>Tốc độ khung hình (FPS)</Caption1>
+                <Dropdown
+                  value={`${fps} FPS`}
+                  onOptionSelect={(e, data) => setFps(Number(data.optionValue))}
+                  disabled={isRecording}
+                  size="medium"
+                  style={{ width: '100%' }}
+                >
+                  <Option value="60">60 FPS</Option>
+                  <Option value="30">30 FPS</Option>
+                </Dropdown>
+              </div>
+
+              {webcamOverlay && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <Caption1 style={{ fontWeight: '600' }}>Vị trí Webcam</Caption1>
+                  <Dropdown
+                    value={
+                      webcamPosition === 'bottom-right'
+                        ? 'Dưới bên phải'
+                        : webcamPosition === 'bottom-left'
+                        ? 'Dưới bên trái'
+                        : webcamPosition === 'top-right'
+                        ? 'Trên bên phải'
+                        : 'Trên bên trái'
+                    }
+                    onOptionSelect={(e, data) => setWebcamPosition(data.optionValue as any)}
+                    disabled={isRecording}
+                    size="medium"
+                    style={{ width: '100%' }}
+                  >
+                    <Option value="bottom-right">Dưới bên phải</Option>
+                    <Option value="bottom-left">Dưới bên trái</Option>
+                    <Option value="top-right">Trên bên phải</Option>
+                    <Option value="top-left">Trên bên trái</Option>
+                  </Dropdown>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        <Divider vertical style={{ alignSelf: 'stretch' }} />
 
         {/* Right Column - Recording Workspace */}
         <div className={styles.recordingWorkspace}>
